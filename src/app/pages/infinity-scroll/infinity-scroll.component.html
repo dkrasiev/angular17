@@ -1,0 +1,20 @@
+<h2>Inifinity Scroll</h2>
+
+<button (click)="resetPage()">Reset</button>
+<button (click)="nextPage()">Next page</button>
+<button (click)="changeFilter()">Change filter</button>
+
+@if (model$ | async; as model) {
+  @switch (model.state) {
+    <!-- loading -->
+    @case ("loading") {
+      <div>loading...</div>
+    }
+    <!-- fulfilled -->
+    @case ("fulfilled") {
+      @for (i of model.data; track i) {
+        <div>{{ i }}</div>
+      }
+    }
+  }
+}

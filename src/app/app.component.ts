@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  imports: [CommonModule, RouterOutlet, RouterLink],
+  template: `
+    <a routerLink="/"> Home</a>
+    <a routerLink="/infinity"> Infinity scroll test </a>
+    <router-outlet></router-outlet>
+  `,
 })
-export class AppComponent {
-  title = 'angular17';
-}
+export class AppComponent { }
