@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { Routes } from '@angular/router'
 
 export const routes: Routes = [
   {
@@ -9,10 +9,15 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'infinity',
+    path: 'infinnity',
     loadComponent: () =>
       import('./pages/infinity-scroll/infinity-scroll.component').then(
         (m) => m.InfinityScrollComponent,
       ),
   },
-];
+  {
+    path: 'test',
+    loadComponent: () =>
+      import('./pages/test/test.component').then((m) => m.TestComponent),
+  },
+]

@@ -1,14 +1,14 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { RouteLinksComponent } from './components/route-links/route-links.component'
+import { RouterOutlet } from '@angular/router'
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink],
+  imports: [CommonModule, RouterOutlet, RouteLinksComponent],
   template: `
-    <a routerLink="/"> Home</a>
-    <a routerLink="/infinity"> Infinity scroll test </a>
+    <app-route-links></app-route-links>
     <router-outlet></router-outlet>
   `,
 })
