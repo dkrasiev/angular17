@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
-import { routes } from '../../app.routes';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { routes } from '../../app.routes'
+import { RouterLink, RouterLinkActive } from '@angular/router'
 
 @Component({
   selector: 'app-route-links',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, RouterLinkActive],
   styles: [
     `
@@ -31,5 +32,5 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   `,
 })
 export class RouteLinksComponent {
-  routes = routes;
+  routes = routes
 }
