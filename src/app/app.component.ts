@@ -9,20 +9,17 @@ import { RouterOutlet } from '@angular/router'
   styles: [
     `
       :host {
-        display: flex;
-        flex-direction: column;
-
         height: 100%;
+
+        --header-height: 4rem;
       }
 
       header {
-        height: 4rem;
-
+        height: var(--header-height);
         padding: 0 1rem;
-
         margin-bottom: 2rem;
-
         border-bottom: 1px solid black;
+
         box-shadow: 0px 0px 2rem 0.5rem lightgray;
 
         display: flex;
@@ -34,9 +31,9 @@ import { RouterOutlet } from '@angular/router'
       }
 
       main {
-        flex: 1;
-
-        width: 54rem;
+        height: calc(100% - var(--header-height));
+        max-width: 54rem;
+        padding: 0 2rem;
         margin: auto;
       }
     `,
