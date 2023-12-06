@@ -1,7 +1,6 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EmbeddedViewRef,
   QueryList,
@@ -9,7 +8,6 @@ import {
   ViewChild,
   ViewChildren,
   ViewContainerRef,
-  ViewRef,
 } from '@angular/core'
 import { AsyncPipe, CommonModule, JsonPipe, NgStyle } from '@angular/common'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
@@ -28,23 +26,11 @@ type TemplateContext = Partial<{
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('animation', [
-      // state('void', style({ opacity: 0, transform: 'translateX(-100%)' })),
-      // state('*', style({ opacity: 1, transform: 'translateX(0)' })),
+      state('void', style({ opacity: 0, scale: 0 })),
+      state('*', style({ opacity: 1, scale: 1 })),
 
-      // state('void', style({ height: 0, width: 0 })),
-      // state('*', style({ height: '*', width: '*' })),
-
-      // state('void', style({ scale: 0 })),
-      // state('*', style({ scale: 1 })),
-
-      transition(':enter, void => void, * => *, void => *', [
-        style({ scale: 0 }),
-        animate('.5s ease-in-out', style({ scale: 1 })),
-      ]),
-      transition(':leave', [
-        style({ scale: 1 }),
-        animate('.5s ease-in-out', style({ scale: 0 })),
-      ]),
+      transition(':enter', [animate('.5s ease-in-out')]),
+      transition(':leave', [animate('.5s ease-in-out')]),
     ]),
   ],
   imports: [CommonModule, NgStyle, ReactiveFormsModule, AsyncPipe, JsonPipe],
@@ -147,12 +133,8 @@ type TemplateContext = Partial<{
     </div>
 
     <ng-template #template let-color="color" let-text="text">
-      <div
-        @animation
-        (@animation.done)="log($event)"
-        class="circle"
-        [style.background-color]="color"
-      >
+      <!-- (@animation.done)="log($event)" -->
+      <div @animation class="circle" [style.background-color]="color">
         {{ text }}
       </div>
     </ng-template>
@@ -178,32 +160,29 @@ export class ViewContainerExampleComponent implements AfterViewInit {
 
   private currentViewContainer!: ViewContainerRef
 
+  private get context() {
+    return { ...this.form.value }
+  }
+
   constructor(private fb: FormBuilder) {
     this.form.valueChanges
       .pipe(takeUntilDestroyed())
-      .subscribe((value) => this.updateViewContext(value))
+      .subscribe(() => this.updateViewContext())
   }
 
   ngAfterViewInit() {
     if (this.containers.length > 0) {
       queueMicrotask(() => {
-        const { color, text } = this.form.value
         this.currentViewContainer = this.containers.get(0)!
         this.currentViewContainer
-          .createEmbeddedView(this.template, { color, text })
+          .createEmbeddedView(this.template, this.context)
           .markForCheck()
-
-        const view = this.currentViewContainer.get(0)
-        console.log(view)
       })
     }
   }
 
   next(step: number) {
-    const view = this.currentViewContainer.get(0)
-    if (!view) {
-      return
-    }
+    this.currentViewContainer.clear()
 
     const nextIndex = this.containers.reduce((acc, curr, i) => {
       if (curr === this.currentViewContainer) {
@@ -219,34 +198,17 @@ export class ViewContainerExampleComponent implements AfterViewInit {
       return
     }
 
-    nextViewContainer.insert(view)
     this.currentViewContainer = nextViewContainer
-    this.updateViewContext(this.form.value)
-    this.trigger$.next(Math.random())
-
-    view.reattach()
+    this.currentViewContainer.createEmbeddedView(this.template, this.context)
   }
 
-  private updateViewContext(value: TemplateContext) {
-    const view = this.currentViewContainer.get(0)
-    if (this.isEmbeddedView<TemplateContext>(view)) {
-      view.context.color = value.color
-      view.context.text = value.text
+  private updateViewContext() {
+    if (this.currentViewContainer) {
+      const view = this.currentViewContainer.get(
+        0,
+      ) as EmbeddedViewRef<TemplateContext>
+
+      Object.assign(view.context, this.context)
     }
-  }
-
-  private isEmbeddedView<T>(value: unknown): value is EmbeddedViewRef<T> {
-    return Boolean(
-      value &&
-      typeof value === 'object' &&
-      // @ts-ignore
-      (value['context'] as unknown) &&
-      // @ts-ignore
-      typeof value['context'] === 'object',
-    )
-  }
-
-  public log(e: unknown) {
-    console.log(e)
   }
 }
